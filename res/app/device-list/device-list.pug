@@ -1,0 +1,131 @@
+.stf-device-list
+  .row.stf-stats-container.unselectable
+    .col-md-12
+      device-list-stats(tracker='tracker')
+
+  .row.unselectable
+    .col-md-12
+      .widget-container.fluid-height.stf-device-list-tabs
+        .widget-content.padded
+
+          .filtering-buttons
+            datalist(id='searchFields')
+              select(name='searchFields')
+                option(ng-repeat='column in columns', ng-value='column.name + ": "',
+                ng-bind='columnDefinitions[column.name].title | translate')
+            input(type='search', autosave='deviceFilter'
+              name='deviceFilter', ng-model='search.deviceFilter', ng-change='applyFilter(search.deviceFilter)',
+              ng-model-options='{debounce: 150}'
+              autocorrect='off', autocapitalize='off', spellcheck='false',
+              list='searchFields', multiple, focus-element='search.focusElement',
+              text-focus-select, accesskey='4').form-control.input-sm.device-search.pull-right
+
+            span.pull-right(ng-if='activeTabs.details && !$root.basicMode')
+              .btn-group(uib-dropdown).pull-right
+                button.btn.btn-sm.btn-primary-outline(type='button', ng-click='showSmartTest()')
+                  i.fa.fa-columns
+                  span 启动遍历测试
+
+                button.btn.btn-sm.btn-primary-outline(type='button', ng-click='showStartPopWindowMonitor()')
+                  i.fa.fa-columns
+                  span 启动弹窗监控
+
+                button.btn.btn-sm.btn-primary-outline(type='button', ng-click='showStopPopWindowMonitor()')
+                  i.fa.fa-columns
+                  span 关闭弹窗监控
+
+                button.btn.btn-sm.btn-primary-outline(type='button', ng-click='showLunchShell()')
+                  i.fa.fa-columns
+                  span 兼容性测试
+                button.btn.btn-sm.btn-primary-outline(type='button', ng-file-select='installApk($files)')
+                  i.fa.fa-columns
+                  span 上传APP并安装
+                button.btn.btn-sm.btn-primary-outline(type='button', ng-click='showUnInstall()')
+                  i.fa.fa-columns
+                  span 卸载APP
+                button.btn.btn-sm.btn-primary-outline(type='button', uib-dropdown-toggle)
+                  i.fa.fa-columns
+                  span(ng-bind='"Customize"|translate')
+
+                ul.uib-dropdown-menu(role='menu').pointer.stf-device-details-customize
+                  li(ng-repeat='column in columns track by column.name',
+                  ng-hide='!adminMode && columnDefinitions[column.name].admin',
+                  ng-click='$event.stopPropagation()')
+                    label.checkbox.pointer
+                      input(type='checkbox', ng-model='column.selected')
+                      span(ng-bind='columnDefinitions[column.name].title | translate')
+                  li
+                    button(ng-click='reset()').btn.btn-xs.btn-danger-outline
+                      i.fa.fa-trash-o
+                      span(ng-bind='"Reset"|translate')
+
+          uib-tabset.overflow-auto.device-list-active-tabs(ng-if='activeTabs')
+            uib-tab(active='activeTabs.icons', select='focusSearch()')
+              uib-tab-heading
+                i.fa.fa-th-large
+                span(translate) Devices
+              div.device-list-devices-content(ng-if='activeTabs.icons').selectable
+
+                device-list-icons(tracker='tracker', columns='columns', sort='sort', filter='filter')
+
+            uib-tab(active='activeTabs.details', select='focusSearch()', ng-if='!$root.basicMode')
+              uib-tab-heading
+                i.fa.fa-list
+                span(translate) Details
+              div.device-list-details-content(ng-if='activeTabs.details').selectable
+
+                device-list-details(tracker='tracker', columns='columns', sort='sort', filter='filter').selectable
+
+div.jdb_model
+  div.lunch-shell(ng-if='smartTestModel')
+    h4 开始执行遍历测试
+    //- input(type='text', ng-model='toDoShell',style='width:100%')
+    div.button-list
+      button.btn.btn-sm.btn-default(type='button', ng-click='hideSmartTest()')
+        span 取消
+      button.btn.btn-sm.btn-primary(type='button', ng-click='startSmartTest()')
+        span 执行
+
+
+
+div.jdb_model
+  div.lunch-shell(ng-if='shellModel')
+    h4 开始执行兼容性自动化
+    //- input(type='text', ng-model='toDoShell',style='width:100%')
+    div.button-list
+      button.btn.btn-sm.btn-default(type='button', ng-click='closeLunchShell()')
+        span 取消
+      button.btn.btn-sm.btn-primary(type='button', ng-click='lunchShell()')
+        span 执行
+
+div.jdb_model
+  div.lunch-shell(ng-if='startPopWindowMonitorModel')
+    h4 启动权限弹窗处理监控
+    //- input(type='text', ng-model='toDoShell',style='width:100%')
+    div.button-list
+      button.btn.btn-sm.btn-default(type='button', ng-click='hideStartPopWindowMonitor()')
+        span 取消
+      button.btn.btn-sm.btn-primary(type='button', ng-click='startPopWindowMonitor()')
+        span 执行
+
+div.jdb_model
+  div.lunch-shell(ng-if='stopPopWindowMonitorModel')
+    h4 关闭权限弹窗处理监控
+    //- input(type='text', ng-model='toDoShell',style='width:100%')
+    div.button-list
+      button.btn.btn-sm.btn-default(type='button', ng-click='hideStopPopWindowMonitor()')
+        span 取消
+      button.btn.btn-sm.btn-primary(type='button', ng-click='stopPopWindowMonitor()')
+        span 执行
+
+
+div.jdb_model
+  div.lunch-shell(ng-if='unInstallModel')
+    h4 请输入包名
+    input(type='text', ng-model='toUninstall',style='width:100%')
+    div.button-list
+      button.btn.btn-sm.btn-default(type='button', ng-click='closeUnInstall()')
+        span 取消
+      button.btn.btn-sm.btn-primary(type='button', ng-click='uninstallApk()')
+        span 执行
+
